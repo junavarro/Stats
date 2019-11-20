@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, OnChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as d3 from 'd3';
+import { element } from 'protractor';
 interface DataModel {
   date: string;
   frequency: number;
@@ -24,27 +25,25 @@ export class HomePage implements OnChanges {
 
   constructor(db: AngularFirestore) {
     this.items = db.collection('items').valueChanges();
-    db.collection('items').valueChanges().subscribe((data: [any]) => {
+    db.collection('items', ref => ref.orderBy('date')).valueChanges().subscribe((data: [any]) => {
       console.log(data.length);
       this.itemsLength = data.length;
       var result = {};
       let freqValues = [];
       data.forEach((i) => {
-        let temp = freqValues.find((ele) => ele.date = i.date);
-        if (temp) {
-          temp.frequency += 1 / this.itemsLength;
+        console.log("validating", i.date);
+        let temp = freqValues.findIndex((ele) => ele.date == i.date);
+       
+        if (temp >= 0) {
+          console.log(temp);
+          freqValues[temp].frequency += 1 / this.itemsLength;
         } else {
+          console.log("else",temp);
           freqValues.push({ date: i.date, frequency: 1 / this.itemsLength });
         }
-        // if (!result.hasOwnProperty(i.date)) {
-        //   result[i.date] = 1/this.itemsLength;
-        // }
-        // else {
-        //   result[i.date] += 1/this.itemsLength;
-        // }
       });
+      console.log(freqValues,result);
       this.countList = freqValues;
-      //console.log(freqValues);
       this.data= this.countList;
       this.createChart();
 
