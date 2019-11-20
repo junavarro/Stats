@@ -7,11 +7,7 @@
 </ion-header>
 
 <ion-content>
-
-  <ul>
-    <li class="text" *ngFor="let item of items | async">
-      {{item.name}} {{item.date}} {{item.hour}}
-    </li>
-  </ul>
+ 
+  <div #chart id="chart"></div>
 
 </ion-content>
